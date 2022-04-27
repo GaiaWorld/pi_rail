@@ -4,12 +4,9 @@ use std::ffi::CString;
 
 use crate::ffi::{CreateEventHandler, rail_RailResult, rail_RailRegisterEvent, rail_RailUnregisterEvent, rail_IRailEvent, rail_RailFireEvents, rail_RAILEventID};
 
-pub type EventID = rail_RAILEventID;
-
-pub type RailResult = rail_RailResult;
 /// 添加事件处理器
 pub fn register_event<F>(event_id: EventID, event_handler: F) -> Handle
-where F: Fn(EventID, u64, u64, String, RailResult) + 'static{
+where F: Fn(EventID, RailID, GameID, UserData, RailResult) + 'static{
 	unsafe extern "C" fn callback (
 		context: u64,
 		event_id: EventID,
@@ -61,6 +58,13 @@ pub fn fire_events() {
 pub struct Handle {
 	handle: *mut rail_IRailEvent
 }
+
+pub type EventID = rail_RAILEventID;
+
+pub type RailResult = rail_RailResult;
+pub type RailID = u64;
+pub type GameID = u64;
+pub type UserData = String;
 
 
 
