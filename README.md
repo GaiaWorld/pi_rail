@@ -1,0 +1,1 @@
+# 一个对wegame railsdk 的rust绑定

@@ -1,0 +1,18 @@
+[package]
+name = "pi_rail"
+version = "0.1.0"
+authors = ["suncy <530739162@qq.com>"]
+edition = "2021"
+description = "wegame ffi"
+repository = "https://github.com/GaiaWorld/pi_rail.git"
+license = "MIT OR Apache-2.0"
+keywords = ["pi", "wegame", "rail"]
+
+[dependencies]
+cxx = "1.0"
+
+[build-dependencies]
+cxx-build = "1.0"
+bindgen = "0.59"
+
+
