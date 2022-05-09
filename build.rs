@@ -33,7 +33,8 @@ fn main() {
         // bindings for.
         .header("wrapper.cpp")
 		// .allowlist_recursively(true)
-		.allowlist_function("NeedRestartAppForCheckingEnvironment")
+
+		
 		.allowlist_function("rail::RailInitialize")
 		.allowlist_function("rail::RailFinalize")
 		.allowlist_function("rail::RailRegisterEvent")
@@ -44,6 +45,11 @@ fn main() {
 		.allowlist_function("AsyncShowPaymentWindow")
 		.allowlist_function("AsyncAcquireSessionTicket")
 
+		.allowlist_function("NeedRestartAppForCheckingEnvironment")
+
+		.allowlist_type("rail::rail_event::.*")
+		// .allowlist_type("rail::RailSessionTicket")
+		
 		.rustified_enum("rail::RAILEventID")
 		.rustified_enum("rail::RailResult")
 		.rustfmt_bindings(true)
