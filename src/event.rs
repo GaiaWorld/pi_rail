@@ -1,28 +1,22 @@
 //! 事件模块
-
-use std::ffi::CString;
-
-use crate::ffi::{CreateEventHandler, rail_RailResult, rail_RailRegisterEvent, rail_RailUnregisterEvent, rail_IRailEvent, rail_RailFireEvents, rail_RAILEventID};
+use crate::ffi::{CreateEventHandler, rail_RailResult, rail_EventBase, rail_RailRegisterEvent, rail_RailUnregisterEvent, rail_IRailEvent, rail_RailFireEvents, rail_RAILEventID};
 
 /// 添加事件处理器
 pub fn register_event<F>(event_id: EventID, event_handler: F) -> Handle
-where F: Fn(EventID, RailID, GameID, UserData, RailResult) + 'static{
+where F: Fn(EventID, *mut rail_EventBase) + 'static{
 	unsafe extern "C" fn callback (
 		context: u64,
 		event_id: EventID,
-		rail_id: u64,
-		game_id: u64,
-		user_data: *const ::std::os::raw::c_char,
-		result: RailResult,
+		event: *mut rail_EventBase,
 	) {
-		let handler = Box::from_raw(context as *mut EventHandler);
-		let userdata = CString::from_raw(user_data as usize as *mut ::std::os::raw::c_char).into_string().expect("user_data parse fail!");
-		(handler.f)(event_id, rail_id, game_id, userdata, result);
-	
+		let handler= &mut * (context as *mut EventHandler);
+		// let userdata = CString::from_raw(user_data as usize as *mut ::std::os::raw::c_char).into_string().expect("user_data parse fail!");
+		(handler.f)(event_id, event);
+		
 	}
 
 	struct EventHandler {
-		f: Box<dyn Fn(EventID, u64, u64, String, RailResult)>
+		f: Box<dyn Fn(EventID, *mut rail_EventBase)>
 	}
 
 	let event_handler = Box::new(event_handler);

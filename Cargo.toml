@@ -14,5 +14,6 @@ cxx = "1.0"
 [build-dependencies]
 cxx-build = "1.0"
 bindgen = "0.59"
+cc = "1.0.73"
 
 

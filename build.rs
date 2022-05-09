@@ -7,10 +7,23 @@ fn main() {
     // Tell cargo to tell rustc to link the system bzip2
     // shared library.
 	// println!("cargo:rustc-link-search=rail/libs/win/Release_64");
-    println!("cargo:rustc-link-lib=rail/libs/win/Release_64/rail_api64");
-	
+    let cargo_dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let cargo_dir = cargo_dir.replace('\\', "/");
+
     // Tell cargo to invalidate the built crate whenever the wrapper changes
-    println!("cargo:rerun-if-changed=wrapper.hpp");
+    println!("cargo:rerun-if-changed={}/wrapper.cpp", cargo_dir);
+
+    cc::Build::new()
+        .file("wrapper.cpp")
+        .cpp(true)
+        .compile("rail_c_api");
+
+    println!(
+        "cargo:rustc-link-search=native={}/rail/libs/win/Release_64",
+        cargo_dir
+    );
+    println!("cargo:rustc-link-lib=static=rail_api64");
+    // println!("cargo:rustc-link-lib=static=rail_c_api");
 
     // The bindgen::Builder is the main entry point
     // to bindgen, and lets you build up options for
@@ -18,7 +31,7 @@ fn main() {
     let bindings = bindgen::Builder::default()
         // The input header we would like to generate
         // bindings for.
-		.header("wrapper.hpp")
+        .header("wrapper.cpp")
 		// .allowlist_recursively(true)
 		.allowlist_function("NeedRestartAppForCheckingEnvironment")
 		.allowlist_function("rail::RailInitialize")
