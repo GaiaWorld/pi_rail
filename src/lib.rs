@@ -1,4 +1,4 @@
-mod ffi;
+pub mod ffi;
 
 pub mod lifetime;
 pub mod event;

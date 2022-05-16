@@ -16,6 +16,7 @@ fn main() {
     cc::Build::new()
         .file("wrapper.cpp")
         .cpp(true)
+        .static_crt(true)
         .compile("rail_c_api");
 
     println!(

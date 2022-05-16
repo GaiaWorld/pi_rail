@@ -3,20 +3,21 @@ use crate::ffi::{CreateEventHandler, rail_RailResult, rail_EventBase, rail_RailR
 
 /// 添加事件处理器
 pub fn register_event<F>(event_id: EventID, event_handler: F) -> Handle
-where F: Fn(EventID, *mut rail_EventBase) + 'static{
+where F: Fn(EventID, RailResult, *mut rail_EventBase) + 'static{
 	unsafe extern "C" fn callback (
 		context: u64,
 		event_id: EventID,
+		result: RailResult, // res 直接翻译到rust层，解析不出来，所以添加了一个参数
 		event: *mut rail_EventBase,
 	) {
 		let handler= &mut * (context as *mut EventHandler);
 		// let userdata = CString::from_raw(user_data as usize as *mut ::std::os::raw::c_char).into_string().expect("user_data parse fail!");
-		(handler.f)(event_id, event);
+		(handler.f)(event_id, result, event);
 		
 	}
 
 	struct EventHandler {
-		f: Box<dyn Fn(EventID, *mut rail_EventBase)>
+		f: Box<dyn Fn(EventID, RailResult, *mut rail_EventBase)>
 	}
 
 	let event_handler = Box::new(event_handler);

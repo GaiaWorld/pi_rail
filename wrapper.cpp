@@ -1,5 +1,6 @@
 #include "rail/sdk/rail_api.h"
 #include <stdio.h>
+#include "iostream"
 
 // =========== rust
 
@@ -10,7 +11,7 @@ extern "C" {
 
 // user_data 以0結尾的字符串
 // typedef void (*Handler)(size_t context, rail::RAIL_EVENT_ID event_id, uint64_t rail_id, uint64_t game_id, const char* user_data, rail::RailResult result);
-typedef void (*Handler)(size_t context, rail::RAIL_EVENT_ID event_id, rail::EventBase* param);
+typedef void (*Handler)(size_t context, rail::RAIL_EVENT_ID event_id, rail::RailResult result, rail::EventBase* param);
 
 class EventHandler : public rail::IRailEvent {
 public:
@@ -18,7 +19,8 @@ public:
 	size_t context;
 	
     virtual void OnRailEvent(rail::RAIL_EVENT_ID event_id, rail::EventBase* param) {
-		this->callback(this->context, event_id, param);
+		rail::RailResult result = param->result;
+		this->callback(this->context, event_id, result, param);
     }
 };
 
@@ -31,7 +33,6 @@ rail::IRailEvent* CreateEventHandler(size_t context, Handler handler) {
 
 void AsyncShowPaymentWindow(const char* order_id, const char* user_data) {
 	rail::IRailFactory *factory = rail::RailFactory();
-
 	rail::IRailInGameStorePurchaseHelper* helper = factory->RailInGameStorePurchaseHelper();
 	helper->AsyncShowPaymentWindow(order_id, user_data);
 }
