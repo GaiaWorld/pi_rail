@@ -5,7 +5,7 @@ use crate::ffi::{CreateEventHandler, rail_RailResult, rail_EventBase, rail_RailR
 pub fn register_event<F>(event_id: EventID, event_handler: F) -> Handle
 where F: Fn(EventID, RailResult, *mut rail_EventBase) + 'static{
 	unsafe extern "C" fn callback (
-		context: u64,
+		context: usize,
 		event_id: EventID,
 		result: RailResult, // res 直接翻译到rust层，解析不出来，所以添加了一个参数
 		event: *mut rail_EventBase,
@@ -27,7 +27,7 @@ where F: Fn(EventID, RailResult, *mut rail_EventBase) + 'static{
 	};
 
 	let handler = unsafe{ CreateEventHandler(
-		Box::into_raw(Box::new(handler)) as u64, 
+		Box::into_raw(Box::new(handler)) as usize, 
 		Some(callback))};
 	unsafe{rail_RailRegisterEvent(event_id, handler);}
 	
